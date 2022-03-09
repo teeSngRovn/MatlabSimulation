@@ -6,9 +6,15 @@ global point;
 global n;
 global number;
 global appro;
-dt = 1;
-T_x = 400;
-T_y = 401;
+
+%T_x and T_y so big is trying to ensure function calculate right
+%meanwhile, dt big make image seem more smoothly, but it decrease the
+%precision because the sampling frequency becomes low by big dt.
+dt = 50;
+T_x = 3000;
+T_y = 7001;
+
+
 t_x = 0;
 t_y = 0;
 x = 0;
@@ -17,20 +23,21 @@ number=0;
 appro=lcm(T_x,T_y);
 n = 1;
 
-for i=-3:3
-    for j=-3:3
+for i=-10:10
+    for j=-10:10
         if appro>lcm(T_x+i,T_y+j)
             appro=lcm(T_x+i,T_y+j);
         end
     end
 end
 
+
 %-----draw-----%
 figure
 colordef black
 grid off
 axis equal
-axis([-40 40 -20 20]) 
+axis([-20 20 -20 20]) 
 hold on
 
 
@@ -50,9 +57,9 @@ lineD = animatedline('color', 'y');
 lineE = animatedline('color', 'w');
 
 %The bad color version of lisaru
-line=[line1,line2,line3,line4,line5,line6,line7,line8,line9,lineA,lineB,lineC,lineD,lineE];
+%line=[line1,line2,line3,line4,line5,line6,line7,line8,line9,lineA,lineB,lineC,lineD,lineE];
 
-%line = [line2,line9];
+line = [line2,line9];
 point = plot(x, y, 'r:.', 'markersize', 20);
 
 while true
@@ -64,7 +71,7 @@ while true
     if t_y == T_y
         t_y = 0;
     end
-    if t_x == T_x 
+    if t_x == int32(T_x/dt)*dt
         draw(t_x, t_y, 1);
         t_x = 0;
     end
@@ -83,6 +90,7 @@ function draw(tx, ty, flg)
     %appro=T_x;
     y = 10 * sin(2 * pi / T_y * ty);
     %y = (sqrt(ty)+ty)/sin(2 * pi / T_y * ty)/100+10;
+    
     %setpoint trace update the coordinate of the ball is, and it will
     %showup when drawnow function been executed
     %set(point, 'Xdata', x, 'Ydata', y);
@@ -96,7 +104,7 @@ function draw(tx, ty, flg)
     if flg
         number = number+1;
     end
-    if number==int32((appro)/T_x)
+    if number==int32(appro/T_x)
         n = mod(n, length(line)) + 1;
         clearpoints(line(n))
         number=0;
